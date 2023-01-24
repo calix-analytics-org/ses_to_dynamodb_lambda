@@ -15,7 +15,7 @@ jobs:
       - uses: yvesgurcan/deploy-lambda-function@v0.0.5
         with:
           package: lambda.zip
-          function-name: ses_to_dynamo
+          function-name: ses_to_dynamodb
           AWS_REGION: ${{ secrets.AWS_REGION }}
           AWS_SECRET_ID: ${{ secrets.AWS_SECRET_ID }}
           AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
