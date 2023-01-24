@@ -3,11 +3,10 @@ import re
 import json
 
 def lambda_handler(event, context):
-    
+
     ''' For an SES-trigger, the event follows the structure given here
     https://docs.aws.amazon.com/lambda/latest/dg/services-ses.html
     '''
-
     from_ = event['Records'][0]['ses']['mail']['commonHeaders']['from']
     subject = event['Records'][0]['ses']['mail']['commonHeaders']['subject']
     timestamp = event['Records'][0]['ses']['mail']['timestamp']
