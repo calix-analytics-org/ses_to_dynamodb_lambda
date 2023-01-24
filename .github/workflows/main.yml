@@ -5,7 +5,8 @@ on:
     types: [closed]
     branches:
       - main
-
+      - master
+      
 jobs:
   lambda-ci:
     runs-on: ubuntu-latest
