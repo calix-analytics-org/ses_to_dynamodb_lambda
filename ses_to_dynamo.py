@@ -3,6 +3,7 @@ import re
 import json
 
 def lambda_handler(event, context):
+    
     ''' For an SES-trigger, the event follows the structure given here
     https://docs.aws.amazon.com/lambda/latest/dg/services-ses.html
     '''
