@@ -7,6 +7,7 @@ def lambda_handler(event, context):
     ''' For an SES-trigger, the event follows the structure given here
     https://docs.aws.amazon.com/lambda/latest/dg/services-ses.html
     '''
+    # Email parts 
     from_ = event['Records'][0]['ses']['mail']['commonHeaders']['from']
     subject = event['Records'][0]['ses']['mail']['commonHeaders']['subject']
     timestamp = event['Records'][0]['ses']['mail']['timestamp']
@@ -16,13 +17,14 @@ def lambda_handler(event, context):
 
     # Code to extract info taken from Andre Gonclaves' original operator
     if match:
+
         # Breakdown email subject
         file_name = match.group('file_name').lower()
         chunk_type = 'single file' if match.group('chunk_type') == 'Sch' else match.group('chunk_type').replace('of','/').lower()
         event_type = match.group('event_type').replace('\r\n','').lower()
         status = match.group('status').lower()
         
-        # Dictionary only stores unique values.                   
+        # Dictionary only stores unique values.
         # Chunked files contains '/'. Example: 'w_inventory_daily_bal_f 1/4' 
         # Merging file_name + chunk_type
         if '/' in chunk_type:
@@ -40,8 +42,11 @@ def lambda_handler(event, context):
                     region_name = 'us-west-2')
         table = ddb_client.Table('email_notification_states')
 
+        # Writing to dynamodb
         print({'file_name':key,'value':val})
         resp = table.put_item(Item = {'file_name':key,'value':json.dumps(val)})
+        
+        # Deal with response 
         if not resp['ResponseMetadata']['HTTPStatusCode'] == 200:
             raise Exception(f'Error updating dynamodb: {resp}')
         else:
