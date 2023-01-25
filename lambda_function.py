@@ -29,8 +29,10 @@ def lambda_handler(event, context):
             file_name = f'{file_name} {chunk_type}'
         
         # Build the key-value to store in dynamodb
-        key = match.group('file_name').lower()
+        key = file_name
         val = {'timestamp': timestamp,
+            'chunk_type': chunk_type,
+            'event_type': event_type,
             'status': status}
         
         # Initiate boto3 dynamodb session
