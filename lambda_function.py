@@ -13,7 +13,7 @@ def lambda_handler(event, context):
     timestamp = event['Records'][0]['ses']['mail']['timestamp']
 
     # Oracle BI emails
-    match = re.search(r".*(\[(?P<file_name>\w+).*(?P<event_type>Incremental|Full|Sync\r\n.*Start|Sync\r\n.*End)(\r\n)?.*(\r\n.*)?(?P<chunk_type>Sch|\s\d+of\d+).*\]):\s.*(Job\r\n)?.*(?P<status>successfully|failed).*", subject) 
+    match = re.search(r".*Load.*(?P<completion_status>Started|completed)|Oracle.*(?P<file_name>\[\w+).*(?P<event_type>Incremental|Full|Sync Start|Sync End).*(?P<schedule_type>BIP Sch|API Req)(\)|\s)(?P<chunk_type>\d+of\d+)?.*(?P<status>successfully|failed)", subject) 
 
     # Code to extract info taken from Andre Gonclaves' original operator
     if match:
