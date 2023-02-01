@@ -14,7 +14,7 @@ def lambda_handler(event, context):
     timestamp = event['Records'][0]['ses']['mail']['timestamp']
 
     # Oracle BI emails
-    match = re.search(r".*Load.*(?P<completion_status>Started|completed)|Oracle.*(?P<file_name>\[\w+).*(?P<event_type>Incremental|Full|Sync Start|Sync End).*(?P<schedule_type>BIP Sch|API Req)(\)|\s)(?P<chunk_type>\d+of\d+)?.*(?P<status>successfully|failed)", subject) 
+    match = re.search(r".*Load.*(?P<completion_status>Started|completed)|Oracle.*\[(?P<file_name>\w+).*(?P<event_type>Incremental|Full|Sync Start|Sync End).*(?P<schedule_type>BIP Sch|API Req)(\)|\s)(?P<chunk_type>\d+of\d+)?.*(?P<status>successfully|failed)", subject) 
 
     # Code to extract info taken from Andre Gonclaves' original operator
     if match:
@@ -24,7 +24,7 @@ def lambda_handler(event, context):
         completion_status = match.group('completion_status')
         log.info(f'Completion status is {completion_status}')
         # Avoiding None when email is regarding a single file or sync start / end
-        chunk_type = '' if match.group('chunk_type') == None else match.group('chunk_type')
+        chunk_type_ = '-' if match.group('chunk_type') == None else match.group('chunk_type').replace('of','/').lower()
         log.info(f'Chunk type is {chunk_type}')
         
         # If email is not from Oracle Plan Started or Completed 
@@ -32,7 +32,7 @@ def lambda_handler(event, context):
             file_name = match.group('file_name').lower()
             event_type = match.group('event_type').replace('\r\n','').lower()
             schedule_type = match.group('schedule_type').lower()
-            chunk_type = 'single file' if '/' not in match.group('chunk_type') else match.group('chunk_type').replace('of','/').lower()
+            chunk_type = 'single file' if '/' not in chunk_type_ else chunk_type_
             status = match.group('status').lower()
 
             # Dictionary stores only unique values
