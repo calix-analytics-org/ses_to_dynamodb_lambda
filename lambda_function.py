@@ -24,15 +24,15 @@ def lambda_handler(event, context):
         completion_status = match.group('completion_status')
         log.info(f'Completion status is {completion_status}')
         # Avoiding None when email is regarding a single file or sync start / end
-        chunk_type_ = '-' if match.group('chunk_type') == None else match.group('chunk_type').replace('of','/').lower()
-        log.info(f'Chunk type is {chunk_type_}')
+        chunk_type = '-' if match.group('chunk_type') == None else match.group('chunk_type').replace('of','/').lower()
+        log.info(f'Chunk type is {chunk_type}')
         
         # If email is not from Oracle Plan Started or Completed 
         if completion_status == None:
             file_name = match.group('file_name').lower()
             event_type = match.group('event_type').replace('\r\n','').lower()
             schedule_type = match.group('schedule_type').lower()
-            chunk_type = 'single file' if '/' not in chunk_type_ else chunk_type_
+            chunk_type = 'single file' if '/' not in chunk_type else chunk_type
             status = match.group('status').lower()
 
             # Dictionary stores only unique values
@@ -42,6 +42,7 @@ def lambda_handler(event, context):
                 file_name = f'{file_name} {chunk_type}'
         # Capturing Load Plan Start and Completed
         else: 
+            completion_status = completion_status.lower()
             file_name = f'load plan {completion_status}'
             schedule_type = 'oracle erp to bi' 
             chunk_type = ''
