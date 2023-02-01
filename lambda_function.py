@@ -19,9 +19,11 @@ def lambda_handler(event, context):
     if match:
 
         # Breakdown email subject
+        completion_status = match.group('completion_status').lower() 
         file_name = match.group('file_name').lower()
-        chunk_type = 'single file' if match.group('chunk_type') == 'Sch' else match.group('chunk_type').replace('of','/').lower()
         event_type = match.group('event_type').replace('\r\n','').lower()
+        schedule_type = match.group('schedule_type').lower() 
+        chunk_type = 'single file' if match.group('chunk_type') == 'Sch' else match.group('chunk_type').replace('of','/').lower()
         status = match.group('status').lower()
         
         # Dictionary only stores unique values.
@@ -30,9 +32,19 @@ def lambda_handler(event, context):
         if '/' in chunk_type:
             file_name = f'{file_name} {chunk_type}'
         
+        # Capturing Load Plan Start and Completed
+        # File name will be blank in that case
+        if (file_name is None) and completion_status:
+            file_name = f'load plan {completion_status}'
+            schedule_type = 'oracle erp to bi' 
+            chunk_type = None
+            event_type = completion_status
+            status = ''
+
         # Build the key-value to store in dynamodb
         key = file_name
         val = {'timestamp': timestamp,
+            'schedule_type': schedule_type, 
             'chunk_type': chunk_type,
             'event_type': event_type,
             'status': status}
