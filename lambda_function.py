@@ -35,8 +35,7 @@ def lambda_handler(event, context):
         val = {'timestamp': timestamp,
             'chunk_type': chunk_type,
             'event_type': event_type,
-            'status': status,
-            'execution_status': execution_status}
+            'status': status}
         
         # Initiate boto3 dynamodb session
         ddb_client = boto3.resource('dynamodb',
