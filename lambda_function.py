@@ -25,7 +25,7 @@ def lambda_handler(event, context):
         log.info(f'Completion status is {completion_status}')
         # Avoiding None when email is regarding a single file or sync start / end
         chunk_type_ = '-' if match.group('chunk_type') == None else match.group('chunk_type').replace('of','/').lower()
-        log.info(f'Chunk type is {chunk_type}')
+        log.info(f'Chunk type is {chunk_type_}')
         
         # If email is not from Oracle Plan Started or Completed 
         if completion_status == None:
