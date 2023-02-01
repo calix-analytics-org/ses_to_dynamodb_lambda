@@ -1,6 +1,7 @@
 import boto3
 import re
 import json
+import logging as log
 
 def lambda_handler(event, context):
 
@@ -21,12 +22,13 @@ def lambda_handler(event, context):
         # Breakdown email subject
         # Capturing Load Plan Start and Completed
         completion_status = match.group('completion_status')
-
+        log.info(f'Completion status is {completion_status}')
         # Avoiding None when email is regarding a single file or sync start / end
         chunk_type = '' if match.group('chunk_type') == None else match.group('chunk_type')
+        log.info(f'Chunk type is {chunk_type}')
         
         # If email is not from Oracle Plan Started or Completed 
-        if completion_status != None:
+        if completion_status == None:
             file_name = match.group('file_name').lower()
             event_type = match.group('event_type').replace('\r\n','').lower()
             schedule_type = match.group('schedule_type').lower()
