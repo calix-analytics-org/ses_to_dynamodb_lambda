@@ -13,7 +13,7 @@ def lambda_handler(event, context):
     timestamp = event['Records'][0]['ses']['mail']['timestamp']
 
     # Oracle BI emails
-    match = re.search(r".*(\[(?P<file_name>\w+).*(?P<event_type>Incremental|Full|Sync\r\n.*Start|Sync\r\n.*End)(\r\n)?.*(\r\n.*)?(?P<chunk_type>Sch|\s\d+of\d+).*\]):\s.*(Job\r\n)?.*(?P<status>successfully|failed).*", subject)
+    match = re.search(r"^Load.*(?P<execution_status>Started|Completed)|Oracle|.*(\[(?P<file_name>\w+).*(?P<event_type>Incremental|Full)(\r\n)?.*(\r\n.*)?(?P<chunk_type>Sch|\s\d+of\d+).*\]):\s.*(Job\r\n)?.*(?P<status>successfully|failed).*", subject)
 
     # Code to extract info taken from Andre Gonclaves' original operator
     if match:
@@ -23,6 +23,7 @@ def lambda_handler(event, context):
         chunk_type = 'single file' if match.group('chunk_type') == 'Sch' else match.group('chunk_type').replace('of','/').lower()
         event_type = match.group('event_type').replace('\r\n','').lower()
         status = match.group('status').lower()
+        execution_status=match.group('status').lower()
         
         # Dictionary only stores unique values.
         # Chunked files contains '/'. Example: 'w_inventory_daily_bal_f 1/4' 
@@ -35,7 +36,8 @@ def lambda_handler(event, context):
         val = {'timestamp': timestamp,
             'chunk_type': chunk_type,
             'event_type': event_type,
-            'status': status}
+            'status': status,
+            'execution_status': execution_status}
         
         # Initiate boto3 dynamodb session
         ddb_client = boto3.resource('dynamodb',
