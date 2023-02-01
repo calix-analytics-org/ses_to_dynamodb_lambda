@@ -34,7 +34,7 @@ def lambda_handler(event, context):
         
         # Capturing Load Plan Start and Completed
         # File name will be blank in that case
-        if (file_name is None) and completion_status:
+        if (file_name == None) and completion_status:
             file_name = f'load plan {completion_status}'
             schedule_type = 'oracle erp to bi' 
             chunk_type = None
