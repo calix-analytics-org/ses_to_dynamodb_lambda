@@ -19,22 +19,28 @@ def lambda_handler(event, context):
     if match:
 
         # Breakdown email subject
-        completion_status = '' if match.group('completion_status') == None else match.group('completion_status').lower()
-        file_name = f'load plan {completion_status}' if match.group('file_name') == None else match.group('file_name').lower()
-        event_type = match.group('event_type').replace('\r\n','').lower()
-        schedule_type = match.group('schedule_type').lower() 
-        chunk_type = 'single file' if match.group('chunk_type') == 'Sch' else match.group('chunk_type').replace('of','/').lower()
-        status = match.group('status').lower()
-        
-        # Dictionary only stores unique values.
-        # Chunked files contains '/'. Example: 'w_inventory_daily_bal_f 1/4' 
-        # Merging file_name + chunk_type
-        if '/' in chunk_type:
-            file_name = f'{file_name} {chunk_type}'
-        
         # Capturing Load Plan Start and Completed
-        # File name will be blank in that case
-        if (completion_status == 'started') or (completion_status == 'completed'):
+        completion_status = match.group('completion_status')
+
+        # Avoiding None when email is regarding a single file or sync start / end
+        chunk_type = '' if match.group('chunk_type') == None else match.group('chunk_type')
+        
+        # If email is not from Oracle Plan Started or Completed 
+        if completion_status != None:
+            file_name = match.group('file_name').lower()
+            event_type = match.group('event_type').replace('\r\n','').lower()
+            schedule_type = match.group('schedule_type').lower()
+            chunk_type = 'single file' if '/' not in match.group('chunk_type') else match.group('chunk_type').replace('of','/').lower()
+            status = match.group('status').lower()
+
+            # Dictionary stores only unique values
+            # Chunked files contains '/'. Example: 'w_inventory_daily_bal_f 1/4' 
+            # Merging file_name + chunk_type
+            if '/' in chunk_type:
+                file_name = f'{file_name} {chunk_type}'
+        # Capturing Load Plan Start and Completed
+        else: 
+            file_name = f'load plan {completion_status}'
             schedule_type = 'oracle erp to bi' 
             chunk_type = ''
             event_type = completion_status
