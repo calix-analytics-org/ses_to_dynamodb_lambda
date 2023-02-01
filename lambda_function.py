@@ -14,6 +14,7 @@ def lambda_handler(event, context):
 
     # Oracle BI emails
     match = re.search(r".*(\[(?P<file_name>\w+).*(?P<event_type>Incremental|Full|Sync\r\n.*Start|Sync\r\n.*End)(\r\n)?.*(\r\n.*)?(?P<chunk_type>Sch|\s\d+of\d+).*\]):\s.*(Job\r\n)?.*(?P<status>successfully|failed).*", subject) 
+
     # Code to extract info taken from Andre Gonclaves' original operator
     if match:
 
@@ -22,7 +23,6 @@ def lambda_handler(event, context):
         chunk_type = 'single file' if match.group('chunk_type') == 'Sch' else match.group('chunk_type').replace('of','/').lower()
         event_type = match.group('event_type').replace('\r\n','').lower()
         status = match.group('status').lower()
-        execution_status=match.group('status').lower()
         
         # Dictionary only stores unique values.
         # Chunked files contains '/'. Example: 'w_inventory_daily_bal_f 1/4' 
