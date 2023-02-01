@@ -19,8 +19,8 @@ def lambda_handler(event, context):
     if match:
 
         # Breakdown email subject
-        completion_status = match.group('completion_status').lower() 
-        file_name = match.group('file_name').lower()
+        completion_status = '' if match.group('completion_status') == None else match.group('completion_status').lower()
+        file_name = f'load plan {completion_status}' if match.group('file_name') == None else match.group('file_name').lower()
         event_type = match.group('event_type').replace('\r\n','').lower()
         schedule_type = match.group('schedule_type').lower() 
         chunk_type = 'single file' if match.group('chunk_type') == 'Sch' else match.group('chunk_type').replace('of','/').lower()
@@ -34,10 +34,9 @@ def lambda_handler(event, context):
         
         # Capturing Load Plan Start and Completed
         # File name will be blank in that case
-        if (file_name == None) and completion_status:
-            file_name = f'load plan {completion_status}'
+        if (completion_status == 'started') or (completion_status == 'completed'):
             schedule_type = 'oracle erp to bi' 
-            chunk_type = None
+            chunk_type = ''
             event_type = completion_status
             status = ''
 
