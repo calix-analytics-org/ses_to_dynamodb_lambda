@@ -34,7 +34,7 @@ def lambda_handler(event, context):
             schedule_type = match.group('schedule_type').lower()
             chunk_type = 'single file' if '/' not in chunk_type else chunk_type
             status = match.group('status').lower()
-            total_chunks = ''
+            total_chunks = 0
 
             # Dictionary stores only unique values
             # Chunked files contains '/'. Example: 'w_inventory_daily_bal_f 1/4' 
@@ -55,7 +55,7 @@ def lambda_handler(event, context):
             chunk_type = ''
             event_type = completion_status
             status = ''
-            total_chunks = ''
+            total_chunks = 0
 
         # Build the key-value to store in dynamodb
         key = file_name
