@@ -42,6 +42,11 @@ def lambda_handler(event, context):
             if '/' in chunk_type:
                 file_name = f'{file_name} {chunk_type}'
                 total_chunks = chunk_type.split("/")[1]
+
+            # Merging file_name + sync_start or sync_end
+            if (event_type == 'sync_start') or (event_type == 'sync_end'):
+                file_name = f'{file_name} {event_type}'
+
         # Capturing Load Plan Start and Completed
         else: 
             completion_status = completion_status.lower()
