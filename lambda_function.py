@@ -34,12 +34,14 @@ def lambda_handler(event, context):
             schedule_type = match.group('schedule_type').lower()
             chunk_type = 'single file' if '/' not in chunk_type else chunk_type
             status = match.group('status').lower()
+            total_chunks = ''
 
             # Dictionary stores only unique values
             # Chunked files contains '/'. Example: 'w_inventory_daily_bal_f 1/4' 
             # Merging file_name + chunk_type
             if '/' in chunk_type:
                 file_name = f'{file_name} {chunk_type}'
+                total_chunks = chunk_type.split("/")[1]
         # Capturing Load Plan Start and Completed
         else: 
             completion_status = completion_status.lower()
@@ -48,6 +50,7 @@ def lambda_handler(event, context):
             chunk_type = ''
             event_type = completion_status
             status = ''
+            total_chunks = ''
 
         # Build the key-value to store in dynamodb
         key = file_name
@@ -55,6 +58,7 @@ def lambda_handler(event, context):
             'schedule_type': schedule_type, 
             'chunk_type': chunk_type,
             'event_type': event_type,
+            'total_chunks': total_chunks,
             'status': status}
         
         # Initiate boto3 dynamodb session
