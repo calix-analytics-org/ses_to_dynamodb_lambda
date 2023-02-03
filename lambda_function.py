@@ -45,7 +45,7 @@ def lambda_handler(event, context):
 
             # Merging file_name + sync_start or sync_end
             if (event_type == 'sync start') or (event_type == 'sync end'):
-                file_name = f'{file_name} {event_type}'
+                file_name = f'{file_name} - {event_type}'
 
         # Capturing Load Plan Start and Completed
         else: 
